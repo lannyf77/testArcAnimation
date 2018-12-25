@@ -25,12 +25,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        CircleView circle = (CircleView) findViewById(R.id.circle);
-
-        CircleAngleAnimation animation = new CircleAngleAnimation(circle, 240);
-        animation.setDuration(1000);
-        circle.startAnimation(animation);
+//        CircleView circle = (CircleView) findViewById(R.id.circle);
+//
+//        CircleAngleAnimation animation = new CircleAngleAnimation(circle, 240);
+//        animation.setDuration(1000);
+//        circle.startAnimation(animation);
 
     }
 }

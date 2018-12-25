@@ -16,7 +16,6 @@
 
 package com.example.customfancontroller;
 
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,9 +23,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 
 /**
@@ -48,11 +45,10 @@ public class DialView extends View {
 
     private Paint mAnimPaint;
 
-
     private float mRadius;                   // Radius of the dial.
     private int mActiveSelection;            // The active selection.
 
-    private int mLastSelection;            // The last selection.
+    private int mLastSelection;              // The last selection.
 
     private double animAngle;
     float startAngle;
@@ -130,12 +126,11 @@ public class DialView extends View {
         Double newMarkAngle = baseAngle + (mActiveSelection * (2 * (Math.PI / SELECTION_COUNT)));
 
         //float startAngle = (mLastSelection * (360 / SELECTION_COUNT));
-        float endAngle = (mActiveSelection * (360 / SELECTION_COUNT));
+        //float endAngle = (mActiveSelection * (360 / SELECTION_COUNT));
 
         animAngle = newMarkAngle;
         startAngle = (9 * (360 / SELECTION_COUNT));
-        sweepAngle = 6;
-
+        sweepAngle = 0;
 
         // Set up onClick listener for this view.
         // Rotates between each of the different selection
@@ -146,10 +141,7 @@ public class DialView extends View {
                 // Rotate selection forward to the next valid choice.
                 mActiveSelection = (mActiveSelection + 1) % SELECTION_COUNT;
 
-
-                //TEST_ML===<
                 animateArc(1000);
-                //==========>
 
                 // Set dial background color to green if selection is >= 1.
                 if (mActiveSelection >= 1) {
@@ -169,10 +161,8 @@ public class DialView extends View {
     public void animateArc(long duration){
 
         final ValueAnimator valueAnimator = ValueAnimator.ofFloat(0f, 1f);
-        //final ValueAnimator valueAnimator = ValueAnimator.ofFloat(mLastSelection, mActiveSelection);
         valueAnimator.setInterpolator(new LinearInterpolator());
         valueAnimator.setDuration(duration);
-        //valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
 
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -182,17 +172,10 @@ public class DialView extends View {
                 Double oldMarkAngle = baseAngle + (mLastSelection * (2 * (Math.PI / SELECTION_COUNT)));
                 Double newMarkAngle = baseAngle + (mActiveSelection * (2 * (Math.PI / SELECTION_COUNT)));
 
-                //float startAngle = (mLastSelection * (360 / SELECTION_COUNT));
-                //float endAngle = (mActiveSelection * (360 / SELECTION_COUNT));
-
                 Float val = (Float)animation.getAnimatedValue();
-
-
-                //circleView.setValue((Integer) animation.getAnimatedValue());
-
                 float oneSectionRadius = (float)(2 * (Math.PI / SELECTION_COUNT));
 
-                Log.w("+++","+++ onAnimationUpdate()., animation.getAnimatedValue(): "+val+", oneSectionRadius:"+oneSectionRadius+", animAngle:"+animAngle);
+                //Log.w("+++","+++ onAnimationUpdate()., animation.getAnimatedValue(): "+val+", oneSectionRadius:"+oneSectionRadius+", animAngle:"+animAngle);
 
                 if (val >= 1) {
                     mLastSelection = mActiveSelection;
@@ -204,7 +187,7 @@ public class DialView extends View {
                     animAngle = oldMarkAngle + oneSectionRadius * val;
                     sweepAngle = ((360 / SELECTION_COUNT) * val);
 
-                    Log.d("+++","+++ onAnimationUpdate(),  animAngle:"+animAngle+", oldMarkAngle:"+oldMarkAngle+", newMarkAngle:"+newMarkAngle);
+                    //Log.d("+++","+++ onAnimationUpdate(),  animAngle:"+animAngle+", oldMarkAngle:"+oldMarkAngle+", newMarkAngle:"+newMarkAngle);
 
                 }
                 invalidate();
@@ -212,25 +195,6 @@ public class DialView extends View {
         });
 
         valueAnimator.start();
-        ///
-
-
-//        sweepAngle = fromAngle;
-//
-//        invalidate();
-//
-//        ObjectAnimator anim = ObjectAnimator.ofFloat(this, "sweepAngle", fromAngle, toAngle);
-//        anim.setDuration(duration);
-//        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-//        {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator valueAnimator)
-//            {
-//                // calling invalidate(); will trigger onDraw() to execute
-//                invalidate();
-//            }
-//        });
-//        anim.start();
     }
     //==========>
 
@@ -267,6 +231,9 @@ public class DialView extends View {
 
         // Draw the text labels.
         final float labelRadius = mRadius + 20;
+        drawCircle(canvas, mWidth / 2, mHeight / 2, labelRadius);
+
+        int textDelta = 12;
         StringBuffer label = mTempLabel;
         for (int i = 0; i < SELECTION_COUNT; i++) {
             float[] xyData = computeXYForPosition(i, labelRadius);
@@ -274,45 +241,83 @@ public class DialView extends View {
             float y = xyData[1];
             label.setLength(0);
             label.append(i);
-            canvas.drawText(label, 0, label.length(), x, y, mTextPaint);
+            canvas.drawText(label, 0, label.length(), x, y+textDelta, mTextPaint);
+            drawCircle(canvas, x, y, 20);
         }
 
         // Draw the indicator mark
         final float markerRadius = mRadius - 35;
-        float[] xyData = computeXYForPosition(mActiveSelection, markerRadius);
-        float x = xyData[0];
-        float y = xyData[1];
-        //canvas.drawCircle(x, y, 20, mTextPaint);
+        drawCircle(canvas, mWidth / 2, mHeight / 2, markerRadius);
+
+
+//        float[] xyData = computeXYForPosition(mActiveSelection, markerRadius);
+//        float x = xyData[0];
+//        float y = xyData[1];
+//        canvas.drawCircle(x, y, 20, mTextPaint);
 
         //TEST_ML===<
 
-        // Draw the indicator mark
-        //final float markerRadius = mRadius - 35;
-
-        xyData = computeXYForAngle(animAngle, markerRadius);
-        x = xyData[0];
-        y = xyData[1];
+        float[]  xyData = computeXYForAngle(animAngle, markerRadius);
+        float x = xyData[0];
+        float y = xyData[1];
         canvas.drawCircle(x, y, 20, mAnimPaint);
 
-
-        //mRadius = (float) (Math.min(mWidth, mHeight) / 2 * 0.8);
         //==========>
         RectF rectF = new RectF();
-        //rectF.set(strokeWidth, strokeWidth,markerRadius*2 - strokeWidth  ,markerRadius*2 - strokeWidth);
         rectF.set(strokeWidth, strokeWidth,getWidth() - strokeWidth  ,getWidth() - strokeWidth);
 
-        grawArc(canvas, startAngle, sweepAngle, rectF);
+        drawArc(canvas, startAngle, sweepAngle, rectF);
+
+        float l = mWidth / 2 - (mRadius - 35);
+        float t = mHeight / 2 - (mRadius - 35);
+
+        RectF rectF2 = new RectF();
+        rectF2.set(l, t, mWidth/2 + (mRadius - 35)  ,mWidth/2 + (mRadius - 35));
+        float[] lines3 = {rectF2.left, rectF2.top, rectF2.right, rectF2.top,
+                rectF2.right, rectF2.top, rectF2.right, rectF2.bottom,
+                rectF2.right, rectF2.bottom, rectF2.left, rectF2.bottom,
+                rectF2.left, rectF2.bottom, rectF2.left, rectF2.top
+        };
+        canvas.drawLines(lines3, mTextPaint);
+
+        drawArc(canvas, startAngle, sweepAngle, rectF2);
         //canvas.drawArc(rectF, 0, currentAngle, false, paint);
+
+        float[] lines = {rectF.left, rectF.top, rectF.right, rectF.top,
+                         rectF.right, rectF.top, rectF.right, rectF.bottom,
+                         rectF.right, rectF.bottom, rectF.left, rectF.bottom,
+                         rectF.left, rectF.bottom, rectF.left, rectF.top
+                        };
+        canvas.drawLines(lines, mTextPaint);
+
+
+        rectF.set(0,0, getWidth(), getWidth());
+        float[] lines2 = {rectF.left, rectF.top, rectF.right, rectF.top,
+                rectF.right, rectF.top, rectF.right, rectF.bottom,
+                rectF.right, rectF.bottom, rectF.left, rectF.bottom,
+                rectF.left, rectF.bottom, rectF.left, rectF.top
+        };
+        canvas.drawLines(lines2, mTextPaint);
     }
 
     //TEST_ML===<
     private int strokeWidth = 15;
-    private void grawArc(Canvas canvas, float startAngle, float sweepAngle, RectF rectF) {
+    private void drawArc(Canvas canvas, float startAngle, float sweepAngle, RectF rectF) {
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStrokeWidth(strokeWidth);
         paint.setColor(Color.BLUE);
         canvas.drawArc(rectF, startAngle, sweepAngle,false,paint);
+    }
+
+    private void drawCircle(Canvas canvas, float cx, float cy, float radius) {
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setStrokeWidth(1);
+        paint.setColor(Color.BLUE);
+        canvas.drawCircle(cx, cy, radius, paint);
     }
     //==========>
 
@@ -325,7 +330,7 @@ public class DialView extends View {
      * @param radius Radius where label/indicator is to be drawn.
      * @return 2-element array. Element 0 is X-coordinate, element 1 is Y-coordinate.
      */
-    private float[] computeXYForPosition_org(final int pos, final float radius) {
+    private float[] computeXYForPosition_old(final int pos, final float radius) {
         float[] result = mTempResult;
         Double startAngle = Math.PI * (9 / 8d);   // Angles are in radians.
         Double angle = startAngle + (pos * (Math.PI / 4));
