@@ -51,7 +51,8 @@ public class DialView extends View {
     private int mLastSelection;              // The last selection.
 
     private double animAngle;
-    float startAngle;
+    float drawingStartAngle;  //the drawing start angle
+    float currentStartAngle;  //the current marker start point/angle (not the drawing start angle)
     float sweepAngle;
 
     // String buffer for dial labels and float for ComputeXY result.
@@ -125,11 +126,12 @@ public class DialView extends View {
         Double oldMarkAngle = baseAngle + (mLastSelection * (2 * (Math.PI / SELECTION_COUNT)));
         Double newMarkAngle = baseAngle + (mActiveSelection * (2 * (Math.PI / SELECTION_COUNT)));
 
-        //float startAngle = (mLastSelection * (360 / SELECTION_COUNT));
+        //float drawingStartAngle = (mLastSelection * (360 / SELECTION_COUNT));
         //float endAngle = (mActiveSelection * (360 / SELECTION_COUNT));
 
         animAngle = newMarkAngle;
-        startAngle = (9 * (360 / SELECTION_COUNT));
+        drawingStartAngle = (9 * (360 / SELECTION_COUNT));
+        currentStartAngle = drawingStartAngle;
         sweepAngle = 0;
 
         // Set up onClick listener for this view.
@@ -180,9 +182,18 @@ public class DialView extends View {
                 if (val >= 1) {
                     mLastSelection = mActiveSelection;
                     animAngle = newMarkAngle;
-                    startAngle = startAngle + (360 / SELECTION_COUNT);
-                    sweepAngle = 0;
+
+                    currentStartAngle = drawingStartAngle + 360 / SELECTION_COUNT;  //keep the start drawing angle, but update the new marker position angle
+
+                    // for clear the anim result, set the start point at anim end
+//                    drawingStartAngle = drawingStartAngle + (360 / SELECTION_COUNT);
+//                    sweepAngle = 0;
                 } else {
+
+                    // keep to anim final result, set the start drawing angle at anim beginning
+                    if (currentStartAngle != drawingStartAngle) {
+                        drawingStartAngle = currentStartAngle;
+                    }
 
                     animAngle = oldMarkAngle + oneSectionRadius * val;
                     sweepAngle = ((360 / SELECTION_COUNT) * val);
@@ -269,7 +280,7 @@ public class DialView extends View {
         //rectF.set(strokeWidth, strokeWidth,getWidth() - strokeWidth  ,getWidth() - strokeWidth);
         rectF.set(l1, t1,mWidth / 2 + (labelRadius)  ,mHeight / 2 + (labelRadius));
 
-        drawArc(canvas, startAngle, sweepAngle, rectF, Color.GRAY);
+        drawArc(canvas, drawingStartAngle, sweepAngle, rectF, Color.GRAY);
 
         float l = mWidth / 2 - (mRadius - 35);
         float t = mHeight / 2 - (mRadius - 35);
@@ -284,7 +295,7 @@ public class DialView extends View {
         };
         canvas.drawLines(lines3, mTextPaint);
 
-        drawArc(canvas, startAngle, sweepAngle, rectF2, Color.BLUE);
+        drawArc(canvas, drawingStartAngle, sweepAngle, rectF2, Color.BLUE);
         //canvas.drawArc(rectF, 0, currentAngle, false, paint);
 
         float[] lines = {rectF.left, rectF.top, rectF.right, rectF.top,
