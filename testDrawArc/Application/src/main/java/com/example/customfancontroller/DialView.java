@@ -264,15 +264,19 @@ public class DialView extends View {
 
         //==========>
         RectF rectF = new RectF();
-        rectF.set(strokeWidth, strokeWidth,getWidth() - strokeWidth  ,getWidth() - strokeWidth);
+        float l1 = mWidth / 2 - (labelRadius);
+        float t1 = mHeight / 2 - (labelRadius);
+        //rectF.set(strokeWidth, strokeWidth,getWidth() - strokeWidth  ,getWidth() - strokeWidth);
+        rectF.set(l1, t1,mWidth / 2 + (labelRadius)  ,mHeight / 2 + (labelRadius));
 
-        drawArc(canvas, startAngle, sweepAngle, rectF);
+        drawArc(canvas, startAngle, sweepAngle, rectF, Color.GRAY);
 
         float l = mWidth / 2 - (mRadius - 35);
         float t = mHeight / 2 - (mRadius - 35);
 
         RectF rectF2 = new RectF();
-        rectF2.set(l, t, mWidth/2 + (mRadius - 35)  ,mWidth/2 + (mRadius - 35));
+        //rectF2.set(l, t, mWidth/2 + (mRadius - 35)  ,mWidth/2 + (mRadius - 35));
+        rectF2.set(l, t, mWidth/2 + (mRadius - 35)  ,mHeight/2 + (mRadius - 35));
         float[] lines3 = {rectF2.left, rectF2.top, rectF2.right, rectF2.top,
                 rectF2.right, rectF2.top, rectF2.right, rectF2.bottom,
                 rectF2.right, rectF2.bottom, rectF2.left, rectF2.bottom,
@@ -280,7 +284,7 @@ public class DialView extends View {
         };
         canvas.drawLines(lines3, mTextPaint);
 
-        drawArc(canvas, startAngle, sweepAngle, rectF2);
+        drawArc(canvas, startAngle, sweepAngle, rectF2, Color.BLUE);
         //canvas.drawArc(rectF, 0, currentAngle, false, paint);
 
         float[] lines = {rectF.left, rectF.top, rectF.right, rectF.top,
@@ -309,12 +313,12 @@ public class DialView extends View {
 
     //TEST_ML===<
     private int strokeWidth = 15;
-    private void drawArc(Canvas canvas, float startAngle, float sweepAngle, RectF rectF) {
+    private void drawArc(Canvas canvas, float startAngle, float sweepAngle, RectF rectF, int color) {
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStrokeWidth(strokeWidth);
-        paint.setColor(Color.BLUE);
+        paint.setColor(color);
         canvas.drawArc(rectF, startAngle, sweepAngle,false,paint);
     }
 
