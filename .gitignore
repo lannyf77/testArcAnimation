@@ -1,0 +1,5 @@
+*.bin
+*.lock
+testDrawArc/.idea
+testDrawArc/Application/build
+testDrawArc/build/android-profile

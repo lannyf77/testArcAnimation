@@ -298,6 +298,13 @@ public class DialView extends View {
                 rectF.left, rectF.bottom, rectF.left, rectF.top
         };
         canvas.drawLines(lines2, mTextPaint);
+
+//        ///
+//        Paint paint = new Paint();
+//        paint.setColor(Color.RED);
+//        canvas.drawLine(0, 0, 100, 100, paint);
+//        canvas.drawLine(100, 100, 200, 20, paint);
+//        ///
     }
 
     //TEST_ML===<
